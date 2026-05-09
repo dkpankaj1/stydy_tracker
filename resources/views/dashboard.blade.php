@@ -75,7 +75,7 @@
                             <div class="fw-semibold">{{ $subject->name }}</div>
                             <small class="text-body-secondary">Updated {{ $subject->updated_at->diffForHumans() }}</small>
                         </div>
-                        <span class="badge text-bg-light">{{ number_format((float) $subject->progress_score, 2) }}%</span>
+                        <span class="badge text-bg-light">{{ number_format((float) $subject->completion_percentage, 2) }}%</span>
                     </a>
                 @empty
                     <div class="list-group-item text-body-secondary">No subjects yet. Create your first subject to start tracking.</div>

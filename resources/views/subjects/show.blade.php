@@ -14,7 +14,7 @@
             <div>
                 <p class="subject-hero__label tb-kicker mb-1">Subject Overview</p>
                 <h1 class="subject-hero__title tb-title mb-2">{{ $subject->name }}</h1>
-                <p class="subject-hero__progress tb-subtitle mb-0">Progress {{ number_format((float) $subject->progress_score, 2) }}%</p>
+                <p class="subject-hero__progress tb-subtitle mb-0">Progress {{ number_format((float) $subject->completion_percentage, 2) }}%</p>
             </div>
             <div class="subject-hero__actions">
                 <a class="btn btn-outline-secondary" href="{{ route('subjects.time-plan.edit', $subject) }}">Time Planner</a>
@@ -105,7 +105,7 @@
                         >
                             <span class="d-flex flex-column text-start">
                                 <span class="h5 mb-1 tb-card-title">{{ $lesson->name }}</span>
-                                <span class="text-body-secondary">{{ number_format((float) $lesson->progress_score, 2) }}% complete</span>
+                                <span class="text-body-secondary">{{ number_format((float) $lesson->completion_percentage, 2) }}% complete</span>
                             </span>
                         </button>
                     </h2>
@@ -116,8 +116,8 @@
                     >
                         <div class="accordion-body">
                             <div class="lesson-block__head mb-3">
-                                <div class="progress lesson-block__progress" role="progressbar" aria-label="Lesson progress" aria-valuenow="{{ (int) $lesson->progress_score }}" aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar" style="width: {{ min(100, max(0, (float) $lesson->progress_score)) }}%"></div>
+                                <div class="progress lesson-block__progress" role="progressbar" aria-label="Lesson progress" aria-valuenow="{{ (int) $lesson->completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar" style="width: {{ min(100, max(0, (float) $lesson->completion_percentage)) }}%"></div>
                                 </div>
                                 <div class="lesson-block__actions">
                                     <a class="btn btn-sm btn-dark" href="{{ route('subjects.lessons.topics.create', [$subject, $lesson]) }}">New Topic</a>
@@ -160,10 +160,10 @@
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2 mb-2">
-                                                            <span class="badge text-primary bg-primary-subtle border border-primary-subtle">{{ number_format((float) $topic->progress_score, 2) }}%</span>
+                                                            <span class="badge text-primary bg-primary-subtle border border-primary-subtle">{{ number_format((float) $topic->completion_percentage, 2) }}%</span>
                                                         </div>
-                                                        <div class="progress tb-topic-progress" role="progressbar" aria-label="Topic progress" aria-valuenow="{{ (int) $topic->progress_score }}" aria-valuemin="0" aria-valuemax="100">
-                                                            <div class="progress-bar" style="width: {{ min(100, max(0, (float) $topic->progress_score)) }}%"></div>
+                                                        <div class="progress tb-topic-progress" role="progressbar" aria-label="Topic progress" aria-valuenow="{{ (int) $topic->completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                            <div class="progress-bar" style="width: {{ min(100, max(0, (float) $topic->completion_percentage)) }}%"></div>
                                                         </div>
                                                     </td>
                                                     <td>

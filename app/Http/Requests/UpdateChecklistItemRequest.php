@@ -19,7 +19,7 @@ class UpdateChecklistItemRequest extends FormRequest
         /** @var Topic|null $topic */
         $topic = $this->route('topic');
         /** @var ChecklistItem|null $checklistItem */
-        $checklistItem = $this->route('checklistItem');
+        $checklistItem = $this->route('checklistItem') ?? $this->route('checklist_item');
 
         return [
             'title' => [
