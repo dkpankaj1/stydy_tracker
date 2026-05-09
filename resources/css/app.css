@@ -1,11 +1,327 @@
-@import 'tailwindcss';
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+.subject-view {
+	--tb-bg: #f4f6fa;
+	--tb-surface: #ffffff;
+	--tb-surface-2: #f8fafc;
+	--tb-border: #dce3ee;
+	--tb-text: #1f2a37;
+	--tb-muted: #6b778c;
+	--tb-primary: #206bc4;
+	--tb-primary-soft: #e8f1ff;
+	--tb-success: #2fb344;
+	font-family: "Segoe UI", "Noto Sans", "Helvetica Neue", sans-serif;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.subject-hero {
+	background: linear-gradient(180deg, #fbfdff 0%, #f4f7fb 100%);
+	border-radius: 12px;
+	border: 1px solid var(--tb-border);
+	padding: 1.25rem;
+	color: var(--tb-text);
+	box-shadow: 0 1px 2px rgba(31, 41, 55, 0.06), 0 6px 14px rgba(32, 107, 196, 0.06);
+}
+
+.tb-page {
+	background: transparent;
+}
+
+.tb-hero__head {
+	padding-bottom: 0.85rem;
+	border-bottom: 1px solid #e8edf5;
+}
+
+.subject-hero__head {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.subject-hero__label {
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-size: 0.72rem;
+	color: var(--tb-muted);
+	font-weight: 700;
+}
+
+.subject-hero__title {
+	font-size: clamp(1.55rem, 2.2vw, 2rem);
+	font-weight: 650;
+	color: #111827;
+}
+
+.subject-hero__progress {
+	font-size: 0.95rem;
+	color: var(--tb-muted);
+}
+
+.subject-hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: flex-start;
+}
+
+.subject-hero__actions .btn {
+	border-radius: 8px;
+	font-weight: 500;
+}
+
+.subject-hero__stats {
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 0.75rem;
+}
+
+.subject-stat {
+	background: var(--tb-surface);
+	border: 1px solid #e5ebf4;
+	border-radius: 10px;
+	padding: 0.75rem 0.85rem;
+}
+
+.subject-stat span {
+	display: block;
+	font-size: 0.75rem;
+	color: #708099;
+	margin-bottom: 0.2rem;
+}
+
+.subject-stat strong {
+	font-size: 1.15rem;
+	color: #121a26;
+}
+
+.subject-hero__description {
+	margin-top: 1rem;
+	padding: 0.7rem 0.85rem;
+	border-radius: 10px;
+	background: var(--tb-primary-soft);
+	border: 1px solid #cfe1ff;
+	color: #1e3554;
+}
+
+.subject-import {
+	border-radius: 12px;
+	border: 1px solid var(--tb-border);
+	background: var(--tb-surface);
+}
+
+.subject-import__sample {
+	display: inline-block;
+	padding: 0.35rem 0.55rem;
+	border-radius: 8px;
+	background: #f5f8fc;
+	border: 1px dashed #c4d4eb;
+	color: #4e6480;
+	font-size: 0.82rem;
+}
+
+.lesson-block {
+	border-radius: 12px;
+	border: 1px solid var(--tb-border);
+	background: var(--tb-surface);
+	box-shadow: 0 1px 2px rgba(22, 33, 58, 0.04);
+}
+
+.tb-card {
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tb-card:hover {
+	border-color: #c9d6e9;
+	box-shadow: 0 6px 18px rgba(31, 56, 94, 0.08);
+}
+
+.lesson-block__head {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	margin-bottom: 1rem;
+}
+
+.lesson-block__actions {
+	display: flex;
+	gap: 0.45rem;
+	flex-wrap: wrap;
+}
+
+.lesson-block__progress {
+	width: min(320px, 100%);
+	height: 0.6rem;
+	background-color: #e6edf7;
+}
+
+.lesson-block__progress .progress-bar {
+	background: linear-gradient(90deg, #206bc4 0%, #4ea1ff 100%);
+}
+
+.topic-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.8rem;
+}
+
+.topic-table-wrap {
+	width: 100%;
+	overflow-x: auto;
+	border: 1px solid #e3eaf4;
+	border-radius: 10px;
+	background: #fff;
+}
+
+.tb-nested-table {
+	--bs-table-bg: #fff;
+	--bs-table-border-color: #e8eef6;
+	min-width: 960px;
+	margin: 0;
+}
+
+.tb-nested-table thead th {
+	background: #f7f9fc;
+	color: #5f7087;
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid #dce6f3;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+}
+
+.tb-nested-table td {
+	vertical-align: top;
+	padding-top: 0.85rem;
+	padding-bottom: 0.85rem;
+}
+
+.tb-topic-progress {
+	height: 0.52rem;
+	background-color: #e8edf5;
+	max-width: 220px;
+}
+
+.tb-topic-progress .progress-bar {
+	background: linear-gradient(90deg, #206bc4 0%, #4ea1ff 100%);
+}
+
+.tb-checklist-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.tb-checklist-line {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+	border: 1px solid #e3eaf5;
+	border-radius: 8px;
+	background: #fbfdff;
+	padding: 0.35rem;
+}
+
+.topic-card {
+	width: 100%;
+	border-radius: 10px;
+	border: 1px solid #e3e9f2;
+	background: #fafcff;
+	padding: 0.95rem;
+}
+
+.tb-subcard {
+	transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.tb-subcard:hover {
+	transform: translateY(-1px);
+	border-color: #c7d8ef;
+}
+
+.topic-card__head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.6rem;
+	margin-bottom: 0.8rem;
+	padding-bottom: 0.65rem;
+	border-bottom: 1px solid #e7edf6;
+}
+
+.topic-card__actions {
+	display: flex;
+	gap: 0.45rem;
+	flex-wrap: wrap;
+}
+
+.checklist-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.checklist-item-row {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+	border: 1px solid #e2eaf5;
+	border-radius: 8px;
+	padding: 0.45rem;
+	background: #fff;
+}
+
+.checklist-item-row__title {
+	font-size: 0.92rem;
+	color: #213046;
+}
+
+.checklist-item-row__title.is-done {
+	text-decoration: line-through;
+	color: #7b8799;
+}
+
+.tb-card-title,
+.tb-subcard-title {
+	font-weight: 600;
+	color: #1f2937;
+}
+
+@media (max-width: 768px) {
+	.subject-hero,
+	.subject-import,
+	.lesson-block {
+		border-radius: 10px;
+	}
+
+	.topic-table-wrap {
+		border-radius: 8px;
+	}
+
+	.tb-nested-table {
+		min-width: 780px;
+	}
+
+	.topic-card__head {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.topic-card__actions {
+		width: 100%;
+	}
+
+	.topic-card__actions .btn,
+	.topic-card__actions form {
+		width: 100%;
+	}
 }
