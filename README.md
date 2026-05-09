@@ -1,58 +1,122 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Study Track
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Study Track is a Laravel monolith for planning and tracking study progress.
 
-## About Laravel
+The learning hierarchy is:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Subject -> Lesson -> Topic -> Checklist Item
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel 13 (Blade server-rendered UI)
+- MySQL
+- Laravel Queue (database driver)
+- Laravel Notifications, Events, Listeners, Scheduler (in-progress usage)
+- Bootstrap + Tailwind (Breeze base)
 
-## Learning Laravel
+## Current Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Authentication via Breeze
+- Email verification, password reset, profile management
+- Subject CRUD
+- Lesson, Topic, and Checklist item CRUD flows
+- Checklist completion toggle with progress recalculation
+- Subject structure CSV import
+- Subject report CSV export
+- Subject detail page with Bootstrap accordion for lessons
+	- Per-lesson expand/collapse
+	- Open All / Collapse All controls
+- Ownership-based authorization policies
+- Repository contracts and Eloquent implementations (starter set)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Progress Formula
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Used for topic, lesson, subject, and daily rollups:
 
-## Agentic Development
+- completion_percentage = completed_checklist_items / total_checklist_items * 100
+- time_percentage = min(actual_minutes / estimated_minutes * 100, 100)
+- progress_score = (completion_percentage + time_percentage) / 2
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Project Structure
+
+- Routes: `routes/web.php`, `routes/auth.php`
+- Controllers: `app/Http/Controllers`
+- Form Requests: `app/Http/Requests`
+- Services: `app/Services`
+- Repositories: `app/Repositories`
+- Policies: `app/Policies`
+- Models: `app/Models`
+- Views: `resources/views`
+
+## Setup
+
+1. Install dependencies
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+2. Configure environment
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Update `.env` for MySQL (example)
 
-## Code of Conduct
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=study_track
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+QUEUE_CONNECTION=database
+SESSION_DRIVER=database
+CACHE_STORE=database
+```
 
-## Security Vulnerabilities
+4. Run database setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+```
+
+5. Start development servers
+
+```bash
+php artisan serve
+npm run dev
+```
+
+## Useful Commands
+
+- Run tests: `php artisan test`
+- Build frontend assets: `npm run build`
+- Run queue worker: `php artisan queue:work`
+- Check migration status: `php artisan migrate:status`
+
+## Migration Recovery Note
+
+If migration fails with "table already exists" while a migration is still pending:
+
+1. `php artisan config:clear`
+2. `php artisan migrate:status`
+3. Drop only partial tables that were created
+4. Re-run: `php artisan migrate`
+
+## Development Constraints
+
+- Keep Laravel + Blade architecture (no SPA/API-first rewrite)
+- Use MySQL as primary DB
+- Keep controllers thin
+- Put business logic in services
+- Use transactions for multi-table writes
+- Queue non-critical side effects
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the MIT license.
