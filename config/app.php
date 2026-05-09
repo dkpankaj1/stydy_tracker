@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'read_mode' => (bool) env('APP_READ_MODE', false),
+
 ];

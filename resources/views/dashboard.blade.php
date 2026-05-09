@@ -1,16 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
+@php($isReadMode = (bool) (config('app.read_mode') || auth()->user()?->read_mode_enabled))
+@php($isGlobalReadMode = (bool) config('app.read_mode'))
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
         <h1 class="h3 mb-1">Study Dashboard</h1>
         <p class="text-body-secondary mb-0">Track momentum, pending revisions, and recent progress.</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('subjects.create') }}" class="btn btn-primary">New Subject</a>
+        <form method="post" action="{{ route('dashboard.read-mode.toggle') }}">
+            @csrf
+            @method('patch')
+            <button
+                class="btn {{ $isReadMode ? 'btn-warning' : 'btn-outline-warning' }}"
+                type="submit"
+                @disabled($isGlobalReadMode)
+                title="{{ $isGlobalReadMode ? 'Global read mode is enabled in environment config.' : '' }}"
+            >
+                {{ $isReadMode ? 'Disable Read Mode' : 'Enable Read Mode' }}
+            </button>
+        </form>
+        @unless ($isReadMode)
+            <a href="{{ route('subjects.create') }}" class="btn btn-primary">New Subject</a>
+        @endunless
         <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">Open Subjects</a>
     </div>
 </div>
+
+@if ($isGlobalReadMode)
+    <div class="alert alert-info border mb-4" role="alert">
+        Global read mode is enabled by environment configuration.
+    </div>
+@endif
 
 @if ($activeSession)
     <div class="alert alert-warning border mb-4" role="alert">

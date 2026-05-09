@@ -9,6 +9,7 @@ use App\Http\Controllers\TopicController;
 use App\Models\Revision;
 use App\Models\StudySession;
 use App\Models\Subject;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -55,7 +56,7 @@ Route::get('/dashboard', function () {
         ->where('user_id', $userId)
         ->orderByDesc('updated_at')
         ->limit(5)
-        ->get(['id', 'name', 'progress_score', 'updated_at']);
+        ->get(['id', 'name', 'completion_percentage', 'updated_at']);
 
     $dueRevisions = Revision::query()
         ->with('topic.lesson.subject')
@@ -78,6 +79,28 @@ Route::get('/dashboard', function () {
         'dueRevisions' => $dueRevisions,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::patch('/dashboard/read-mode', function (Request $request) {
+    $user = $request->user();
+
+    if ($user === null) {
+        abort(403);
+    }
+
+    if ((bool) config('app.read_mode')) {
+        return redirect()
+            ->route('dashboard')
+            ->with('status', 'Read mode is enforced globally and cannot be changed per user.');
+    }
+
+    $user->forceFill([
+        'read_mode_enabled' => !$user->read_mode_enabled,
+    ])->save();
+
+    return redirect()
+        ->route('dashboard')
+        ->with('status', $user->read_mode_enabled ? 'Read mode enabled.' : 'Read mode disabled.');
+})->middleware(['auth', 'verified'])->name('dashboard.read-mode.toggle');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

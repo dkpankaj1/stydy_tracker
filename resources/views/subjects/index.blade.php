@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+@php($isReadMode = (bool) (config('app.read_mode') || auth()->user()?->read_mode_enabled))
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Subjects</h1>
-    <a href="{{ route('subjects.create') }}" class="btn btn-primary">New Subject</a>
+    @unless ($isReadMode)
+        <a href="{{ route('subjects.create') }}" class="btn btn-primary">New Subject</a>
+    @endunless
 </div>
 
 <div class="card">

@@ -6,6 +6,7 @@
     $topicCount = $subject->lessons->sum(fn ($lesson) => $lesson->topics->count());
     $checklistCount = $subject->lessons->sum(fn ($lesson) => $lesson->topics->sum(fn ($topic) => $topic->checklistItems->count()));
     $completedChecklistCount = $subject->lessons->sum(fn ($lesson) => $lesson->topics->sum(fn ($topic) => $topic->checklistItems->where('is_completed', true)->count()));
+    $isReadMode = (bool) (config('app.read_mode') || auth()->user()?->read_mode_enabled);
 @endphp
 
 <div class="subject-view tb-page">
@@ -17,22 +18,24 @@
                 <p class="subject-hero__progress tb-subtitle mb-0">Progress {{ number_format((float) $subject->completion_percentage, 2) }}%</p>
             </div>
             <div class="subject-hero__actions">
-                <a class="btn btn-outline-secondary" href="{{ route('subjects.time-plan.edit', $subject) }}">Time Planner</a>
                 <a class="btn btn-outline-secondary" href="{{ route('subjects.export-report', $subject) }}">Export CSV Report</a>
-                <a class="btn btn-primary" href="{{ route('subjects.lessons.create', $subject) }}">New Lesson</a>
-                <a class="btn btn-outline-primary" href="{{ route('subjects.edit', $subject) }}">Edit Subject</a>
-                <button
-                    class="btn btn-outline-danger"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteConfirmModal"
-                    data-delete-action="{{ route('subjects.destroy', $subject) }}"
-                    data-delete-title="Delete Subject"
-                    data-delete-message="Delete subject '{{ $subject->name }}' and all related data?"
-                    data-delete-confirm="Delete Subject"
-                >
-                    Delete
-                </button>
+                @unless ($isReadMode)
+                    <a class="btn btn-outline-secondary" href="{{ route('subjects.time-plan.edit', $subject) }}">Time Planner</a>
+                    <a class="btn btn-primary" href="{{ route('subjects.lessons.create', $subject) }}">New Lesson</a>
+                    <a class="btn btn-outline-primary" href="{{ route('subjects.edit', $subject) }}">Edit Subject</a>
+                    <button
+                        class="btn btn-outline-danger"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteConfirmModal"
+                        data-delete-action="{{ route('subjects.destroy', $subject) }}"
+                        data-delete-title="Delete Subject"
+                        data-delete-message="Delete subject '{{ $subject->name }}' and all related data?"
+                        data-delete-confirm="Delete Subject"
+                    >
+                        Delete
+                    </button>
+                @endunless
             </div>
         </div>
 
@@ -60,30 +63,32 @@
         @endif
     </section>
 
-    <section class="card subject-import tb-card mb-4">
-        <div class="card-body">
-            <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center mb-3">
-                <div>
-                    <h2 class="h5 mb-1 tb-card-title">Import Structure CSV</h2>
-                    <p class="text-body-secondary mb-0">Columns: <strong>subject, lesson, topic, checklist</strong> (or <strong>lession</strong>).</p>
+    @unless ($isReadMode)
+        <section class="card subject-import tb-card mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center mb-3">
+                    <div>
+                        <h2 class="h5 mb-1 tb-card-title">Import Structure CSV</h2>
+                        <p class="text-body-secondary mb-0">Columns: <strong>subject, lesson, topic, checklist</strong> (or <strong>lession</strong>).</p>
+                    </div>
+                    <span class="subject-import__sample">{{ $subject->name }}, Lesson 1, Topic A, Checklist item 1</span>
                 </div>
-                <span class="subject-import__sample">{{ $subject->name }}, Lesson 1, Topic A, Checklist item 1</span>
-            </div>
 
-            <form method="post" action="{{ route('subjects.import-structure', $subject) }}" enctype="multipart/form-data" class="row g-2 align-items-center">
-                @csrf
-                <div class="col-12 col-lg-9">
-                    <input class="form-control" type="file" name="csv_file" accept=".csv,text/csv,text/plain" required>
-                    @error('csv_file')
-                        <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="col-12 col-lg-3">
-                    <button class="btn btn-primary w-100" type="submit">Import Structure</button>
-                </div>
-            </form>
-        </div>
-    </section>
+                <form method="post" action="{{ route('subjects.import-structure', $subject) }}" enctype="multipart/form-data" class="row g-2 align-items-center">
+                    @csrf
+                    <div class="col-12 col-lg-9">
+                        <input class="form-control" type="file" name="csv_file" accept=".csv,text/csv,text/plain" required>
+                        @error('csv_file')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <button class="btn btn-primary w-100" type="submit">Import Structure</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    @endunless
 
     @if ($subject->lessons->isNotEmpty())
         <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
@@ -120,20 +125,22 @@
                                     <div class="progress-bar" style="width: {{ min(100, max(0, (float) $lesson->completion_percentage)) }}%"></div>
                                 </div>
                                 <div class="lesson-block__actions">
-                                    <a class="btn btn-sm btn-dark" href="{{ route('subjects.lessons.topics.create', [$subject, $lesson]) }}">New Topic</a>
-                                    <a class="btn btn-sm btn-outline-primary" href="{{ route('subjects.lessons.edit', [$subject, $lesson]) }}">Edit</a>
-                                    <button
-                                        class="btn btn-sm btn-outline-danger"
-                                        type="button"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteConfirmModal"
-                                        data-delete-action="{{ route('subjects.lessons.destroy', [$subject, $lesson]) }}"
-                                        data-delete-title="Delete Lesson"
-                                        data-delete-message="Delete lesson '{{ $lesson->name }}' and all nested topics/checklist items?"
-                                        data-delete-confirm="Delete Lesson"
-                                    >
-                                        Delete
-                                    </button>
+                                    @unless ($isReadMode)
+                                        <a class="btn btn-sm btn-dark" href="{{ route('subjects.lessons.topics.create', [$subject, $lesson]) }}">New Topic</a>
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('subjects.lessons.edit', [$subject, $lesson]) }}">Edit</a>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger"
+                                            type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteConfirmModal"
+                                            data-delete-action="{{ route('subjects.lessons.destroy', [$subject, $lesson]) }}"
+                                            data-delete-title="Delete Lesson"
+                                            data-delete-message="Delete lesson '{{ $lesson->name }}' and all nested topics/checklist items?"
+                                            data-delete-confirm="Delete Lesson"
+                                        >
+                                            Delete
+                                        </button>
+                                    @endunless
                                 </div>
                             </div>
 
@@ -156,7 +163,9 @@
                                                     <td>
                                                         <h3 class="h6 mb-1 tb-subcard-title">{{ $topic->name }}</h3>
                                                         <p class="text-body-secondary small mb-2">{{ $topic->checklistItems->count() }} items</p>
-                                                        <a class="btn btn-sm btn-primary" href="{{ route('subjects.lessons.topics.checklist-items.create', [$subject, $lesson, $topic]) }}">Add Checklist Item</a>
+                                                        @unless ($isReadMode)
+                                                            <a class="btn btn-sm btn-primary" href="{{ route('subjects.lessons.topics.checklist-items.create', [$subject, $lesson, $topic]) }}">Add Checklist Item</a>
+                                                        @endunless
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2 mb-2">
@@ -177,19 +186,21 @@
                                                                         </button>
                                                                     </form>
                                                                     <span class="checklist-item-row__title {{ $item->is_completed ? 'is-done' : '' }}">{{ $item->title }}</span>
-                                                                    <a class="btn btn-sm btn-outline-secondary ms-auto" href="{{ route('subjects.lessons.topics.checklist-items.edit', [$subject, $lesson, $topic, $item]) }}">Edit</a>
-                                                                    <button
-                                                                        class="btn btn-sm btn-outline-danger"
-                                                                        type="button"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#deleteConfirmModal"
-                                                                        data-delete-action="{{ route('subjects.lessons.topics.checklist-items.destroy', [$subject, $lesson, $topic, $item]) }}"
-                                                                        data-delete-title="Delete Checklist Item"
-                                                                        data-delete-message="Delete checklist item '{{ $item->title }}'?"
-                                                                        data-delete-confirm="Delete Item"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
+                                                                    @unless ($isReadMode)
+                                                                        <a class="btn btn-sm btn-outline-secondary ms-auto" href="{{ route('subjects.lessons.topics.checklist-items.edit', [$subject, $lesson, $topic, $item]) }}">Edit</a>
+                                                                        <button
+                                                                            class="btn btn-sm btn-outline-danger"
+                                                                            type="button"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#deleteConfirmModal"
+                                                                            data-delete-action="{{ route('subjects.lessons.topics.checklist-items.destroy', [$subject, $lesson, $topic, $item]) }}"
+                                                                            data-delete-title="Delete Checklist Item"
+                                                                            data-delete-message="Delete checklist item '{{ $item->title }}'?"
+                                                                            data-delete-confirm="Delete Item"
+                                                                        >
+                                                                            Delete
+                                                                        </button>
+                                                                    @endunless
                                                                 </div>
                                                             @empty
                                                                 <span class="text-body-secondary small">No checklist items yet.</span>
@@ -197,21 +208,25 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="d-flex flex-column gap-2">
-                                                            <a class="btn btn-sm btn-outline-primary" href="{{ route('subjects.lessons.topics.edit', [$subject, $lesson, $topic]) }}">Edit Topic</a>
-                                                            <button
-                                                                class="btn btn-sm btn-outline-danger w-100"
-                                                                type="button"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#deleteConfirmModal"
-                                                                data-delete-action="{{ route('subjects.lessons.topics.destroy', [$subject, $lesson, $topic]) }}"
-                                                                data-delete-title="Delete Topic"
-                                                                data-delete-message="Delete topic '{{ $topic->name }}' and its checklist items?"
-                                                                data-delete-confirm="Delete Topic"
-                                                            >
-                                                                Delete Topic
-                                                            </button>
-                                                        </div>
+                                                        @unless ($isReadMode)
+                                                            <div class="d-flex flex-column gap-2">
+                                                                <a class="btn btn-sm btn-outline-primary" href="{{ route('subjects.lessons.topics.edit', [$subject, $lesson, $topic]) }}">Edit Topic</a>
+                                                                <button
+                                                                    class="btn btn-sm btn-outline-danger w-100"
+                                                                    type="button"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#deleteConfirmModal"
+                                                                    data-delete-action="{{ route('subjects.lessons.topics.destroy', [$subject, $lesson, $topic]) }}"
+                                                                    data-delete-title="Delete Topic"
+                                                                    data-delete-message="Delete topic '{{ $topic->name }}' and its checklist items?"
+                                                                    data-delete-confirm="Delete Topic"
+                                                                >
+                                                                    Delete Topic
+                                                                </button>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-body-secondary small">Read mode enabled</span>
+                                                        @endunless
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -225,7 +240,7 @@
             @endforeach
         </div>
     @else
-        <div class="alert alert-info">No lessons yet. Create your first lesson to continue.</div>
+        <div class="alert alert-info">No lessons yet. {{ $isReadMode ? 'Read mode is enabled.' : 'Create your first lesson to continue.' }}</div>
     @endif
 </div>
 
